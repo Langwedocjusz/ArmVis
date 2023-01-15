@@ -8,7 +8,8 @@ int main()
 {
 	//Initialize visualization
 	ArmVis viz;
-	viz.Init("Arm Visualization", 1280, 720);
+	//Arguments are: window title, window width, window height, number of vertices per circle, radius of cylinder
+	viz.Init("Arm Visualization", 1280, 720, 15, 0.1f);
 
 	//Prepare transofrmation data
 	std::vector<float> transform_data;
@@ -51,8 +52,8 @@ void generateMockData(std::vector <float>& transform_data)
 		float s = sin(angle_offset * float(i));
 		float c = cos(angle_offset * float(i));
 
-		float matrix[16] = { c,             -s,           0.0f, 0.0f,
-								  height * s,       height * c,           0.0f, 0.0f,
+		float matrix[16] = {             c,             -s,           0.0f, 0.0f,
+							    height * s,     height * c,           0.0f, 0.0f,
 									  0.0f,           0.0f,           1.0f, 0.0f,
 							translation[0], translation[1], translation[2], 1.0f };
 

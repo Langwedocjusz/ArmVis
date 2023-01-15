@@ -14,7 +14,7 @@ public:
 	ArmVis() = default;
 	~ArmVis();
 
-	void Init(const std::string& title, int width, int height);
+	void Init(const std::string& title, int width, int height, int circle_verts, float thickness);
 	void OnUpdate();
 
 	bool WindowShouldClose();
@@ -35,8 +35,6 @@ private:
 
 	vec3 m_EndPos;
 	vec3 m_CamPos = vec3{2.0f, 1.5f, 0.0f};
-
-	float thickness = 1.0f, length = 1.0f;
 
 	void OnRender();
 	void OnImGui();

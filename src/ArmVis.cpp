@@ -24,7 +24,7 @@ ArmVis::~ArmVis()
     glfwTerminate();
 }
 
-void ArmVis::Init(const std::string& title, int width, int height)
+void ArmVis::Init(const std::string& title, int width, int height, int circle_verts, float thickness)
 {
     //Initialize glfw:
     if (!glfwInit()) {
@@ -61,8 +61,6 @@ void ArmVis::Init(const std::string& title, int width, int height)
     ImGui::StyleColorsDark();
 
     //Prepare geometry
-    const int circle_verts = 15;
-    const float thickness = 0.1f;
     const float pi = 3.1415926535f;
 
     //Bottom
@@ -331,14 +329,13 @@ void ArmVis::OnRender()
 
 void ArmVis::OnImGui()
 {
-    ImGui::Begin("Window");
+    ImGui::Begin("Settings");
+    ImGui::Text("Camera controls:");
     ImGui::SliderFloat("Camera r", &m_CamPos.x, 0.0, 10.0);
     ImGui::SliderFloat("Camera theta", &m_CamPos.y, 0.01, 3.14);
     ImGui::SliderFloat("Camera phi", &m_CamPos.z, 0.0, 6.28);
     ImGui::Spacing();
-    ImGui::SliderFloat("Length", &length, 0.0, 1.0);
-    ImGui::SliderFloat("Thickness", &thickness, 0.0, 1.0);
-    ImGui::Spacing();
+    ImGui::Text("End point:");
     ImGui::SliderFloat("Position X", &m_EndPos.x, -1.0f, 1.0f);
     ImGui::SliderFloat("Position Y", &m_EndPos.y, -1.0f, 1.0f);
     ImGui::SliderFloat("Position Z", &m_EndPos.z, -1.0f, 1.0f);
