@@ -62,16 +62,17 @@ void ArmVis::Init(const std::string& title, int width, int height)
 
     //Prepare geometry
     const int circle_verts = 15;
-    const float pi = 3.1415926535;
+    const float thickness = 0.1f;
+    const float pi = 3.1415926535f;
 
     //Bottom
     for (int i = 0; i < circle_verts; i++)
     {
         float angle = 2.0*pi*float(i)/float(circle_verts);
 
-        m_VertexData.push_back(cos(angle));
+        m_VertexData.push_back(thickness*cos(angle));
         m_VertexData.push_back(0.0f);
-        m_VertexData.push_back(sin(angle));
+        m_VertexData.push_back(thickness*sin(angle));
 
         m_VertexData.push_back(0.0f);
         m_VertexData.push_back(-1.0f);
@@ -90,9 +91,9 @@ void ArmVis::Init(const std::string& title, int width, int height)
     {
         float angle = 2.0 * pi * float(i) / float(circle_verts);
 
-        m_VertexData.push_back(cos(angle));
+        m_VertexData.push_back(thickness*cos(angle));
         m_VertexData.push_back(1.0f);
-        m_VertexData.push_back(sin(angle));
+        m_VertexData.push_back(thickness*sin(angle));
 
         m_VertexData.push_back(0.0f);
         m_VertexData.push_back(1.0f);
@@ -111,10 +112,12 @@ void ArmVis::Init(const std::string& title, int width, int height)
     {
         float angle = 2.0 * pi * float(i) / float(circle_verts);
 
-        m_VertexData.push_back(cos(angle));
+        //Positions
+        m_VertexData.push_back(thickness*cos(angle));
         m_VertexData.push_back(0.0f);
-        m_VertexData.push_back(sin(angle));
+        m_VertexData.push_back(thickness*sin(angle));
 
+        //Normals
         m_VertexData.push_back(cos(angle));
         m_VertexData.push_back(0.0f);
         m_VertexData.push_back(sin(angle));
@@ -124,10 +127,12 @@ void ArmVis::Init(const std::string& title, int width, int height)
     {
         float angle = 2.0 * pi * float(i) / float(circle_verts);
 
-        m_VertexData.push_back(cos(angle));
+        //Positions
+        m_VertexData.push_back(thickness*cos(angle));
         m_VertexData.push_back(1.0f);
-        m_VertexData.push_back(sin(angle));
+        m_VertexData.push_back(thickness*sin(angle));
 
+        //Normals
         m_VertexData.push_back(cos(angle));
         m_VertexData.push_back(0.0f);
         m_VertexData.push_back(sin(angle));
@@ -182,17 +187,18 @@ void ArmVis::Init(const std::string& title, int width, int height)
 
         out vec3 norm;
 
-        uniform float uLength;
-        uniform float uThickness;
-        uniform vec3 uOffset;
+        //uniform float uLength;
+        //uniform float uThickness;
+        //uniform vec3 uOffset;
         uniform mat4 uVP;
+        uniform mat4 uM;
 
         void main()
         {
-            norm = aNorm;
+            norm = mat3(transpose(inverse(uM)))*aNorm;
 
-            vec3 pos = vec3(uThickness, uLength, uThickness) * aPos + uOffset;
-            gl_Position = uVP * vec4(pos, 1.0);
+            vec3 pos = aPos;// vec3(uThickness, uLength, uThickness) * aPos + uOffset;
+            gl_Position = uVP * uM * vec4(pos, 1.0);
         }
     )";
 
@@ -209,7 +215,7 @@ void ArmVis::Init(const std::string& title, int width, int height)
         {
             const vec3 ldir = normalize(vec3(1.0, 1.0, -1.0));
 
-            float dif = 0.2 + 0.8 * sat(dot(norm, ldir));
+            float dif = 0.1 + 0.8 * sat(dot(norm, ldir)) + 0.2 * sat(dot(norm, -ldir));
             
             dif = pow(dif, 1.0/2.2);
 
@@ -309,21 +315,18 @@ void ArmVis::OnRender()
 
     glUseProgram(m_ShaderID);
 
-    unsigned int location = glGetUniformLocation(m_ShaderID, "uLength");
-    glUniform1f(location, length);
-
-    location = glGetUniformLocation(m_ShaderID, "uThickness");
-    glUniform1f(location, thickness);
-
-    location = glGetUniformLocation(m_ShaderID, "uOffset");
-    glUniform3f(location, m_EndPos.x, m_EndPos.y, m_EndPos.z);
-
-    location = glGetUniformLocation(m_ShaderID, "uVP");
+    unsigned location = glGetUniformLocation(m_ShaderID, "uVP");
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(VP));
 
-    glBindVertexArray(m_VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glDrawElements(GL_TRIANGLES, m_IndexData.size(), GL_UNSIGNED_INT, 0);
+    for (int i = 0; i < m_TransformData->size()/16; i++)
+    {
+        location = glGetUniformLocation(m_ShaderID, "uM");
+        glUniformMatrix4fv(location, 1, GL_FALSE, &(m_TransformData->at(16 * i)));
+
+        glBindVertexArray(m_VAO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+        glDrawElements(GL_TRIANGLES, m_IndexData.size(), GL_UNSIGNED_INT, 0);
+    }
 }
 
 void ArmVis::OnImGui()
@@ -340,6 +343,11 @@ void ArmVis::OnImGui()
     ImGui::SliderFloat("Position Y", &m_EndPos.y, -1.0f, 1.0f);
     ImGui::SliderFloat("Position Z", &m_EndPos.z, -1.0f, 1.0f);
     ImGui::End();
+}
+
+void ArmVis::setUserPointer(std::vector<float>* transform_data)
+{
+    m_TransformData = transform_data;
 }
 
 bool ArmVis::WindowShouldClose()

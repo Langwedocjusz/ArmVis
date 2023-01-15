@@ -15,11 +15,11 @@ public:
 	~ArmVis();
 
 	void Init(const std::string& title, int width, int height);
-
 	void OnUpdate();
 
 	bool WindowShouldClose();
 
+	void setUserPointer(std::vector<float>* transform_data);
 	vec3 getEndPos() { return m_EndPos; }
 
 private:
@@ -28,6 +28,8 @@ private:
 
 	std::vector<float> m_VertexData;
 	std::vector<unsigned int> m_IndexData;
+
+	std::vector<float>* m_TransformData;
 
 	GLFWwindow* m_Window;
 
