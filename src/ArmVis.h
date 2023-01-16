@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <cmath>
 #include <string>
 #include <vector>
 

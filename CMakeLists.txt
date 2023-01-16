@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #Build current project as an executable
-add_executable(${PROJECT_NAME})
+add_library(${PROJECT_NAME})
 
 #Add preprocessor definitions
 target_compile_definitions(${PROJECT_NAME} PRIVATE "GLFW_INCLUDE_NONE")
