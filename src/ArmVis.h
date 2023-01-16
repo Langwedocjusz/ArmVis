@@ -22,6 +22,7 @@ public:
 
 	void setUserPointer(std::vector<float>* transform_data);
 	vec3 getEndPos() { return m_EndPos; }
+	vec3 getEndRot() { return m_EndRot; }
 
 private:
 	unsigned int m_VAO, m_VBO, m_EBO;
@@ -34,7 +35,7 @@ private:
 
 	GLFWwindow* m_Window;
 
-	vec3 m_EndPos;
+	vec3 m_EndPos, m_EndRot;
 	vec3 m_CamPos = vec3{2.0f, 1.5f, 0.0f};
 
 	void OnRender();

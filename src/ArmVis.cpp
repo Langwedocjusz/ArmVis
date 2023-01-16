@@ -339,6 +339,9 @@ void ArmVis::OnImGui()
     ImGui::SliderFloat("Position X", &m_EndPos.x, -1.0f, 1.0f);
     ImGui::SliderFloat("Position Y", &m_EndPos.y, -1.0f, 1.0f);
     ImGui::SliderFloat("Position Z", &m_EndPos.z, -1.0f, 1.0f);
+    ImGui::SliderFloat("Rotation X", &m_EndRot.x, -3.14f, 3.14f);
+    ImGui::SliderFloat("Rotation Y", &m_EndRot.y, -3.14f, 3.14f);
+    ImGui::SliderFloat("Rotation Z", &m_EndRot.z, -3.14f, 3.14f);
     ImGui::End();
 }
 
